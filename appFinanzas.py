@@ -10,6 +10,41 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
+import streamlit as st
+import pandas as pd
+import requests
+import io
+
+# URL del archivo CSV en tu repositorio de GitHub
+url = 'https://raw.githubusercontent.com/tu-usuario/tu-repositorio/rama/path/al/archivo/df_sample.csv'
+
+# Descargar el archivo CSV
+response = requests.get(url)
+response.raise_for_status()  # Asegúrate de que la solicitud fue exitosa
+
+# Leer el archivo CSV en un DataFrame
+my_large_df = pd.read_csv(io.StringIO(response.text))
+
+# Función para convertir el DataFrame a CSV (según tu código original)
+@st.cache_data
+def convert_df(df):
+    return df.to_csv().encode('utf-8')
+
+csv = convert_df(my_large_df)
+
+# Mostrar el DataFrame en Streamlit
+st.dataframe(my_large_df)
+
+# Botón para descargar el DataFrame como CSV
+st.download_button(
+    label="Download data as CSV",
+    data=csv,
+    file_name='df_sample.csv',
+    mime='text/csv',
+)
+
+
+
 
 col1, col2, col3 = st.columns(3)
 col1.metric("Temperature", "70 °F", "1.2 °F")
