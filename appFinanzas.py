@@ -21,10 +21,40 @@ chart_data = pd.DataFrame(
 st.area_chart(chart_data, x="col1", y="col2", color="col3")
 
 
+chart_data = pd.DataFrame(np.random.randn(20, 3), columns=["a", "b", "c"])
 
-st.title("Ejercicios de Finanzas :symbols:") 
+st.line_chart(chart_data)
 
-st.header('Materia Ingeniería Financiera')
+import plotly.graph_objects as go
+import numpy as np
+
+# Generar datos aleatorios
+np.random.seed(42)
+x = np.random.randn(100)
+y = np.random.randn(100)
+z = np.random.randn(100)
+
+# Crear la figura 3D
+fig = go.Figure(data=[go.Scatter3d(x=x, y=y, z=z, mode='markers')])
+
+# Configurar el diseño de la figura
+fig.update_layout(
+    title='Gráfica 3D con valores aleatorios',
+    scene=dict(
+        xaxis_title='X AXIS',
+        yaxis_title='Y AXIS',
+        zaxis_title='Z AXIS'
+    )
+)
+
+# Mostrar la figura en Streamlit
+st.plotly_chart(fig)
+
+
+
+st.title("PISA Analisis :symbols:") 
+
+st.header('Tec de Monterrey')
 st.subheader('Danna Ximena Medina Galvan :alien:')
 
 st.divider()
