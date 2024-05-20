@@ -10,7 +10,7 @@ import streamlit as st
 st.title("Ejercicios de Finanzas :symbols:") 
 
 st.header('Materia Ingeniería Financiera')
-st.subheader('Aldo Emmanuel Medina Galván :alien:')
+st.subheader('Danna Ximena Medina Galvan :alien:')
 
 st.divider()
 
