@@ -10,6 +10,14 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
+
+col1, col2, col3 = st.columns(3)
+col1.metric("Temperature", "70 °F", "1.2 °F")
+col2.metric("Wind", "9 mph", "-8%")
+col3.metric("Humidity", "86%", "4%")
+
+
+
 chart_data = pd.DataFrame(
    {
        "col1": np.random.randn(20),
@@ -52,10 +60,10 @@ st.plotly_chart(fig)
 
 
 
-st.title("PISA Analisis :symbols:") 
+st.title("PISA Analisis :smile:") 
 
 st.header('Tec de Monterrey')
-st.subheader('Danna Ximena Medina Galvan :alien:')
+st.subheader('Danna Ximena Medina Galvan :bar_chart:')
 
 st.divider()
 
