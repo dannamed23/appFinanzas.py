@@ -7,21 +7,20 @@ import streamlit as st
 #write: método
 #(): variables
 
+import pandas as pd
+import numpy as np
 
-
-@st.cache_data
-def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv().encode("utf-8")
-
-csv = convert_df(my_large_df)
-
-st.download_button(
-    label="Download data as CSV",
-    data=csv,
-    file_name="large_df.csv",
-    mime="text/csv",
+chart_data = pd.DataFrame(
+   {
+       "col1": np.random.randn(20),
+       "col2": np.random.randn(20),
+       "col3": np.random.choice(["A", "B", "C"], 20),
+   }
 )
+
+st.area_chart(chart_data, x="col1", y="col2", color="col3")
+
+
 
 st.title("Ejercicios de Finanzas :symbols:") 
 
