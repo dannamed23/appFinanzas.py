@@ -16,7 +16,7 @@ import requests
 import io
 
 # URL del archivo CSV en tu repositorio de GitHub
-url = 'https://raw.githubusercontent.com/tu-usuario/tu-repositorio/rama/path/al/archivo/df_sample.csv'
+url = ''
 
 # Descargar el archivo CSV
 response = requests.get(url)
