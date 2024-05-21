@@ -15,33 +15,6 @@ import pandas as pd
 import requests
 import io
 
-# URL del archivo CSV en tu repositorio de GitHub
-url = ''
-
-# Descargar el archivo CSV
-response = requests.get(url)
-response.raise_for_status()  # Asegúrate de que la solicitud fue exitosa
-
-# Leer el archivo CSV en un DataFrame
-my_large_df = pd.read_csv(io.StringIO(response.text))
-
-# Función para convertir el DataFrame a CSV (según tu código original)
-@st.cache_data
-def convert_df(df):
-    return df.to_csv().encode('utf-8')
-
-csv = convert_df(my_large_df)
-
-# Mostrar el DataFrame en Streamlit
-st.dataframe(my_large_df)
-
-# Botón para descargar el DataFrame como CSV
-st.download_button(
-    label="Download data as CSV",
-    data=csv,
-    file_name='df_sample.csv',
-    mime='text/csv',
-)
 
 
 
