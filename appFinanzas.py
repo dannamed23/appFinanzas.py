@@ -79,7 +79,7 @@ st.write("You selected:", options)
 st.title("PISA Analisis :smile:") 
 
 st.header('Tec de Monterrey')
-st.subheader('Danna Ximena Medina Galvan :bar_chart:')
+st.subheader('Equipo 2 :bar_chart:')
 
 st.divider()
 
