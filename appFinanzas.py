@@ -16,7 +16,10 @@ import requests
 import io
 
 
+def load_data():
+    return pd.read_csv('PiSA_df_sample.csv')
 
+df = load_data()
 
 
 col1, col2, col3 = st.columns(3)
