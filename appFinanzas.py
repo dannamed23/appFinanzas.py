@@ -15,279 +15,83 @@ import pandas as pd
 import requests
 import io
 
-
-#INTENTO CON YAML
-import streamlit as st
-import yaml
-import streamlit_authenticator as stauth
-
-# Función para escribir datos en un archivo YAML
-def write_config_to_yaml(data):
-    with open('config.yaml', 'w') as file:
-        yaml.dump(data, file)
-
-# Función para cargar datos desde un archivo YAML
-def load_config_from_yaml():
-    with open('config.yaml', 'r') as file:
-        config = yaml.load(file, Loader=yaml.SafeLoader)
-    return config
-
-# Datos para escribir en el archivo YAML
-data = {
-    'credentials': {
-        'usernames': {
-            'jsmith': {
-                'email': 'jsmith@gmail.com',
-                'name': 'John Smith',
-                'password': 'abc'  # Debe ser reemplazado por la contraseña hasheada
-            },
-            'rbriggs': {
-                'email': 'rbriggs@gmail.com',
-                'name': 'Rebecca Briggs',
-                'password': 'def'  # Debe ser reemplazado por la contraseña hasheada
-            }
-        },
-        'cookie': {
-            'expiry_days': 30,
-            'key': 'random_signature_key',  # Debe ser una cadena
-            'name': 'random_cookie_name'
-        },
-        'preauthorized': {
-            'emails': ['melsby@gmail.com']
-        }
-    }
-}
-
-# Escribir datos en un archivo YAML (solo si el archivo no existe)
-try:
-    with open('config.yaml', 'r') as file:
-        pass
-except FileNotFoundError:
-    write_config_to_yaml(data)
-
-# Cargar configuración desde YAML
-config_data = load_config_from_yaml()
-
-# Hashear contraseñas
-hashed_passwords = stauth.Hasher([config_data['credentials']['usernames']['jsmith']['password'],
-                                 config_data['credentials']['usernames']['rbriggs']['password']]).generate()
-
-# Actualizar configuración con contraseñas hasheadas
-config_data['credentials']['usernames']['jsmith']['password'] = hashed_passwords[0]
-config_data['credentials']['usernames']['rbriggs']['password'] = hashed_passwords[1]
-
-# Inicializar autenticador con la configuración cargada
-authenticator = stauth.Authenticate(
-    config_data['credentials'],
-    config_data['cookie']['name'],
-    config_data['cookie']['key'],
-    config_data['cookie']['expiry_days'],
-    config_data['preauthorized']
-)
-
-# Interfaz de usuario con Streamlit
-name, authentication_status, username = authenticator.login('Login', 'main')
-
-if authentication_status:
-    authenticator.logout('Logout', 'main')
-    st.write(f'Bienvenido *{name}*')
-    st.title('Métricas')
-    
-    # Ejemplo de métricas
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Temperatura", "70 °F", "1.2 °F")
-    col2.metric("Viento", "9 mph", "-8%")
-    col3.metric("Humedad", "86%", "4%")
-
-elif authentication_status == False:
-    st.error('Usuario/contraseña incorrectos')
-else:
-    st.warning('Por favor ingresa tu usuario y contraseña')
-
-# Comprobación de estado de autenticación
-if st.session_state.get("authentication_status"):
-    authenticator.logout('Logout', 'main')
-    st.write(f'Bienvenido *{st.session_state["name"]}*')
-    st.title('Métricas')
-    
-    # Ejemplo de métricas
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Temperatura", "70 °F", "1.2 °F")
-    col2.metric("Viento", "9 mph", "-8%")
-    col3.metric("Humedad", "86%", "4%")
-
-
-
-
-#PARTE DE REGISTRO
-
-credentials:
-  usernames:
-    jsmith:
-      email: jsmith@gmail.com
-      name: John Smith
-      password: abc # To be replaced with hashed password
-    rbriggs:
-      email: rbriggs@gmail.com
-      name: Rebecca Briggs
-      password: def # To be replaced with hashed password
-cookie:
-  expiry_days: 30
-  key: random_signature_key # Must be string
-  name: random_cookie_name
-preauthorized:
-  emails:
-  - melsby@gmail.com
-
-col1, col2, col3 = st.columns(3)
-col1.metric("Temperature", "70 °F", "1.2 °F")
-col2.metric("Wind", "9 mph", "-8%")
-col3.metric("Humidity", "86%", "4%")
-
-hashed_passwords = stauth.Hasher(['abc', 'def']).generate()
-
-import yaml
-from yaml.loader import SafeLoader
-with open('../config.yaml') as file:
-    config = yaml.load(file, Loader=SafeLoader)
-
-authenticator = Authenticate(
-    config['credentials'],
-    config['cookie']['name'],
-    config['cookie']['key'],
-    config['cookie']['expiry_days'],
-    config['preauthorized']
-)
-
-name, authentication_status, username = authenticator.login('Login', 'main')
-
-if authentication_status:
-    authenticator.logout('Logout', 'main')
-    st.write(f'Welcome *{name}*')
-    st.title('Some content')
-elif authentication_status == False:
-    st.error('Username/password is incorrect')
-elif authentication_status == None:
-    st.warning('Please enter your username and password')
-
-if st.session_state["authentication_status"]:
-    authenticator.logout('Logout', 'main')
-    st.write(f'Welcome *{st.session_state["name"]}*')
-    st.title('Some content')
-elif st.session_state["authentication_status"] == False:
-    st.error('Username/password is incorrect')
-elif st.session_state["authentication_status"] == None:
-    st.warning('Please enter your username and password')
-
-
-
-
-#GRAFICOS
-chart_data = pd.DataFrame(
-   {
-       "col1": np.random.randn(20),
-       "col2": np.random.randn(20),
-       "col3": np.random.choice(["A", "B", "C"], 20),
-   }
-)
-
-st.area_chart(chart_data, x="col1", y="col2", color="col3")
-
-
-chart_data = pd.DataFrame(np.random.randn(20, 3), columns=["a", "b", "c"])
-
-st.line_chart(chart_data)
-
-import plotly.graph_objects as go
-import numpy as np
-
-# Generar datos aleatorios
-np.random.seed(42)
-x = np.random.randn(100)
-y = np.random.randn(100)
-z = np.random.randn(100)
-
-# Crear la figura 3D
-fig = go.Figure(data=[go.Scatter3d(x=x, y=y, z=z, mode='markers')])
-
-# Configurar el diseño de la figura
-fig.update_layout(
-    title='Gráfica 3D con valores aleatorios',
-    scene=dict(
-        xaxis_title='X AXIS',
-        yaxis_title='Y AXIS',
-        zaxis_title='Z AXIS'
-    )
-)
-
-# Mostrar la figura en Streamlit
-st.plotly_chart(fig)
-
-options = st.multiselect(
-    "What are your favorite colors",
-    ["Green", "Yellow", "Red", "Blue"],
-    ["Yellow", "Red"])
-
-st.write("You selected:", options)
-
-
-
-
-st.title("PISA Analisis :smile:") 
-
-st.header('Tec de Monterrey')
-st.subheader('Equipo 2 :bar_chart:')
-
-st.divider()
-
-st.subheader('Calculadora de rentas de una casa')
-
-st.write("¿Cuánto es el VPN de un pago mensual de una renta de una casa, si el arrendatario paga 12,000 durante 5 años?")
-st.write("La tasa de descuento es del 6%")
-
-mensualidad = st.number_input('Ingrese la mensualidad')
-periodos = st.number_input('Ingrese el número de meses de rentas', 12, 60)
-
-st.write('La mensualidad es ', mensualidad)
-
-tasa_descuento = 0.06  # Tasa de descuento
-
-vpn = sum([mensualidad / (1 + tasa_descuento) ** n for n in range(1, periodos + 1)])
-
-st.write(f"El Valor Presente Neto de la renta de una casa que paga {mensualidad} al mes, considerando una tasa de {tasa_descuento} durante {periodos} meses es de **${vpn:,.2f}**.")
-
-st.divider()
-
-st.subheader('Calculadora para el retiro')
-st.write("¿Cuánto necesito tener en mi cuenta de banco si me quiero retirar?")
-
-pagomensual= st.number_input("¿Cuánto es el valor de tus gastos mensuales?")
-tasa_rendimiento= 0.138
-
-perpetuidad = (pagomensual * 12)/ tasa_rendimiento
-
-st.markdown(f"Para obtener un ingreso de {pagomensual} al mes, necesitas tener invertirdo **${perpetuidad:,.2f}** a una tasa del {tasa_rendimiento} :sweat_smile:")
-
-st.divider()
-
-st.subheader('Calculadora Monto total de un crédito')
-
-
-monto_prestamo = st.number_input("Ingresa el Monto de tu préstamo", 15000)
-tasa_interes_anual = st.number_input("Ingresa la tasa de interés de tu préstamo",0.07)
-periodos_credito = 5 
-st.write(f"En número de periodos está preestablecido en {periodos_credito}")
-
-tasa_anual = tasa_interes_anual
-pago_anual = monto_prestamo * (tasa_anual / (1 - (1 + tasa_anual) ** -periodos_credito))
-monto_total_pagado = pago_anual * periodos_credito
-
-st.write(f"El monto total pagado por el crédito es: **${monto_total_pagado:,.2f}**")
-
-
-
-
-
-
-
-
+from sklearn.model_selection import train_test_split
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Input, Embedding, Flatten, Dot, Dense, Concatenate
+from tensorflow.keras.optimizers import Adam
+from sklearn.neighbors import NearestNeighbors
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+# Load the df_sample.csv file
+df_sample = pd.read_csv('PISA_df_sample.csv')
+
+# Display the head of the dataframe
+print(df_sample.head())
+
+# Load the dataset
+@st.cache_resource
+def load_data():
+    return pd.read_csv('PISA_df_sample.csv')
+
+df = load_data()
+
+user_ids = df['id_cliente'].astype('category').cat.codes.values
+item_ids = df['articulo'].astype('category').cat.codes.values
+df['user_id'] = user_ids
+df['item_id'] = item_ids
+
+interaction_matrix = df.pivot_table(index=['id_cliente', 'trimestre'], columns='articulo', values='unidades_venta', fill_value=0).reset_index()
+
+# Neural Network Model
+def build_nn_model(num_users, num_items):
+    user_input = Input(shape=(1,))
+    item_input = Input(shape=(1,))
+    user_embedding = Embedding(num_users, 50)(user_input)
+    item_embedding = Embedding(num_items, 50)(item_input)
+    user_vec = Flatten()(user_embedding)
+    item_vec = Flatten()(item_embedding)
+    concat = Concatenate()([user_vec, item_vec])
+    dense = Dense(128, activation='relu')(concat)
+    output = Dense(1)(dense)
+    model = Model([user_input, item_input], output)
+    model.compile(optimizer=Adam(learning_rate=0.001), loss='mean_squared_error')
+    return model
+
+# Train the Neural Network Model
+num_users = df['user_id'].nunique()
+num_items = df['item_id'].nunique()
+X = df[['user_id', 'item_id']].values
+y = df['unidades_venta'].values
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+nn_model = build_nn_model(num_users, num_items)
+nn_model.fit([X_train[:, 0], X_train[:, 1]], y_train, epochs=5, batch_size=64, validation_data=([X_test[:, 0], X_test[:, 1]], y_test))
+
+# KNN Model
+knn = NearestNeighbors(metric='cosine', algorithm='brute')
+knn.fit(interaction_matrix.iloc[:, 2:].values)
+
+# Streamlit UI
+st.title('Pisa product recommendator')
+
+user_id = st.selectbox('Select User ID', df['id_cliente'].unique())
+trimester = st.selectbox('Select Trimester', df['trimestre'].unique())
+recommendation_type = st.selectbox('Select Recommendation Type', ['Neural Network', 'KNN'])
+
+if st.button('Get Recommendations'):
+    if recommendation_type == 'Neural Network':
+        # Neural Network Recommendations
+        user_idx = df[df['id_cliente'] == user_id]['user_id'].values[0]
+        trimester_data = interaction_matrix[interaction_matrix['trimestre'] == trimester].drop(columns=['id_cliente', 'trimestre'])
+        item_ids = trimester_data.columns
+        user_ids = np.full(len(item_ids), user_idx)
+        predictions = nn_model.predict([user_ids, np.arange(len(item_ids))])
+        top_items = item_ids[np.argsort(predictions.flatten())[::-1][:5]]
+        st.write('Neural Network Recommendations for user:', user_id, 'in trimester:', trimester)
+        st.write(top_items)
+    else:
+        # KNN Recommendations
+        user_idx = interaction_matrix[(interaction_matrix['id_cliente'] == user_id) & (interaction_matrix['trimestre'] == trimester)].index[0]
+        distances, indices = knn.kneighbors(interaction_matrix.iloc[user_idx, 2:].values.reshape(1, -1), n_neighbors=6)
+        similar_users = interaction_matrix.iloc[indices.flatten()[1:], :2]
+        recommended_items = interaction_matrix.iloc[similar_users.index, 2:].sum().sort_values(ascending=False).index[:5]
+        st.write('KNN Recommendations for user:', user_id, 'in trimester:', trimester)
+        st.write(recommended_items)
