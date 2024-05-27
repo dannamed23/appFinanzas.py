@@ -15,6 +15,110 @@ import pandas as pd
 import requests
 import io
 
+
+#INTENTO CON YAML
+import streamlit as st
+import yaml
+import streamlit_authenticator as stauth
+
+# Función para escribir datos en un archivo YAML
+def write_config_to_yaml(data):
+    with open('config.yaml', 'w') as file:
+        yaml.dump(data, file)
+
+# Función para cargar datos desde un archivo YAML
+def load_config_from_yaml():
+    with open('config.yaml', 'r') as file:
+        config = yaml.load(file, Loader=yaml.SafeLoader)
+    return config
+
+# Datos para escribir en el archivo YAML
+data = {
+    'credentials': {
+        'usernames': {
+            'jsmith': {
+                'email': 'jsmith@gmail.com',
+                'name': 'John Smith',
+                'password': 'abc'  # Debe ser reemplazado por la contraseña hasheada
+            },
+            'rbriggs': {
+                'email': 'rbriggs@gmail.com',
+                'name': 'Rebecca Briggs',
+                'password': 'def'  # Debe ser reemplazado por la contraseña hasheada
+            }
+        },
+        'cookie': {
+            'expiry_days': 30,
+            'key': 'random_signature_key',  # Debe ser una cadena
+            'name': 'random_cookie_name'
+        },
+        'preauthorized': {
+            'emails': ['melsby@gmail.com']
+        }
+    }
+}
+
+# Escribir datos en un archivo YAML (solo si el archivo no existe)
+try:
+    with open('config.yaml', 'r') as file:
+        pass
+except FileNotFoundError:
+    write_config_to_yaml(data)
+
+# Cargar configuración desde YAML
+config_data = load_config_from_yaml()
+
+# Hashear contraseñas
+hashed_passwords = stauth.Hasher([config_data['credentials']['usernames']['jsmith']['password'],
+                                 config_data['credentials']['usernames']['rbriggs']['password']]).generate()
+
+# Actualizar configuración con contraseñas hasheadas
+config_data['credentials']['usernames']['jsmith']['password'] = hashed_passwords[0]
+config_data['credentials']['usernames']['rbriggs']['password'] = hashed_passwords[1]
+
+# Inicializar autenticador con la configuración cargada
+authenticator = stauth.Authenticate(
+    config_data['credentials'],
+    config_data['cookie']['name'],
+    config_data['cookie']['key'],
+    config_data['cookie']['expiry_days'],
+    config_data['preauthorized']
+)
+
+# Interfaz de usuario con Streamlit
+name, authentication_status, username = authenticator.login('Login', 'main')
+
+if authentication_status:
+    authenticator.logout('Logout', 'main')
+    st.write(f'Bienvenido *{name}*')
+    st.title('Métricas')
+    
+    # Ejemplo de métricas
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Temperatura", "70 °F", "1.2 °F")
+    col2.metric("Viento", "9 mph", "-8%")
+    col3.metric("Humedad", "86%", "4%")
+
+elif authentication_status == False:
+    st.error('Usuario/contraseña incorrectos')
+else:
+    st.warning('Por favor ingresa tu usuario y contraseña')
+
+# Comprobación de estado de autenticación
+if st.session_state.get("authentication_status"):
+    authenticator.logout('Logout', 'main')
+    st.write(f'Bienvenido *{st.session_state["name"]}*')
+    st.title('Métricas')
+    
+    # Ejemplo de métricas
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Temperatura", "70 °F", "1.2 °F")
+    col2.metric("Viento", "9 mph", "-8%")
+    col3.metric("Humedad", "86%", "4%")
+
+
+
+
 #PARTE DE REGISTRO
 
 credentials:
