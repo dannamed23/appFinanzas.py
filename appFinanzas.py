@@ -16,8 +16,6 @@ import requests
 import io
 
 #PARTE DE REGISTRO
-pip install streamlit-authenticator
-import streamlit_authenticator as stauth
 
 credentials:
   usernames:
